@@ -1,17 +1,12 @@
-from ast_nodes import *
 from lexico import TipoToken
+from ast_nodes import *
 
 class Parser:
     def __init__(self, tokens):
         self.tokens = tokens
         self.pos = 0
 
-    # =========================
-    # AUXILIARES
-    # =========================
     def _current(self):
-        if self.pos >= len(self.tokens):
-            return None
         return self.tokens[self.pos]
 
     def _advance(self):
@@ -19,70 +14,74 @@ class Parser:
 
     def _expect(self, tipo):
         token = self._current()
-        if token.tipo == tipo:
-            self._advance()
-            return token
-        raise SyntaxError(f"Esperado {tipo}, encontrado {token}")
+        if token.tipo != tipo:
+            raise Exception(f"Erro: esperado {tipo}, encontrado {token.tipo}")
+        self._advance()
+        return token
 
-    # =========================
+    # =====================
     # ENTRY POINT
-    # =========================
+    # =====================
     def parse(self):
         statements = []
-
         while self._current().tipo != TipoToken.EOF:
             statements.append(self._parse_statement())
+        return BlockNode(statements)
 
-        return Program(statements)
-
-    # =========================
+    # =====================
     # STATEMENTS
-    # =========================
+    # =====================
     def _parse_statement(self):
-        token = self._current().tipo
+        token = self._current()
 
-        if token == TipoToken.CATCHMON:
-            return self._parse_var_decl()
+        if token.tipo == TipoToken.CATCHMON:
+            return self._parse_declaration()
 
-        elif token == TipoToken.IDENTIFICADOR:
+        elif token.tipo == TipoToken.IDENTIFICADOR:
             return self._parse_assignment()
 
-        elif token == TipoToken.IFMON:
+        elif token.tipo == TipoToken.IFMON:
             return self._parse_if()
 
-        elif token == TipoToken.DEXOUT:
+        elif token.tipo == TipoToken.DEXOUT:
             return self._parse_output()
 
         else:
-            raise SyntaxError(f"Comando inesperado: {self._current()}")
+            raise Exception(f"Comando inválido: {token}")
 
-    def _parse_var_decl(self):
+    def _parse_declaration(self):
         self._expect(TipoToken.CATCHMON)
+
         name = self._expect(TipoToken.IDENTIFICADOR).valor
-
         self._expect(TipoToken.ATRIBUICAO)
-        value = self._parse_expression()
 
+        value = self._parse_expression()
         self._expect(TipoToken.PONTO_VIRGULA)
 
-        return VarDecl(name, value)
+        return VarDeclNode(name, value)
 
     def _parse_assignment(self):
         name = self._expect(TipoToken.IDENTIFICADOR).valor
-
         self._expect(TipoToken.ATRIBUICAO)
-        value = self._parse_expression()
 
+        value = self._parse_expression()
         self._expect(TipoToken.PONTO_VIRGULA)
 
-        return Assignment(name, value)
+        return AssignNode(name, value)
+
+    def _parse_output(self):
+        self._expect(TipoToken.DEXOUT)
+
+        expr = self._parse_expression()
+        self._expect(TipoToken.PONTO_VIRGULA)
+
+        return OutputNode(expr)
 
     def _parse_if(self):
         self._expect(TipoToken.IFMON)
+
         self._expect(TipoToken.LPAREN)
-
         condition = self._parse_expression()
-
         self._expect(TipoToken.RPAREN)
 
         then_block = self._parse_block()
@@ -92,14 +91,7 @@ class Parser:
             self._advance()
             else_block = self._parse_block()
 
-        return If(condition, then_block, else_block)
-
-    def _parse_output(self):
-        self._expect(TipoToken.DEXOUT)
-        value = self._parse_expression()
-        self._expect(TipoToken.PONTO_VIRGULA)
-
-        return Output(value)
+        return IfNode(condition, then_block, else_block)
 
     def _parse_block(self):
         self._expect(TipoToken.LBRACE)
@@ -109,14 +101,11 @@ class Parser:
             statements.append(self._parse_statement())
 
         self._expect(TipoToken.RBRACE)
+        return BlockNode(statements)
 
-        return Block(statements)
-
-    # =========================
-    # EXPRESSÕES (IGUAL AO SLIDE)
-    # =========================
-
-    # menor precedência
+    # =====================
+    # EXPRESSIONS
+    # =====================
     def _parse_expression(self):
         node = self._parse_term()
 
@@ -124,11 +113,10 @@ class Parser:
             op = self._current()
             self._advance()
             right = self._parse_term()
-            node = BinaryOp(node, op, right)
+            node = BinOpNode(node, op, right)
 
         return node
 
-    # precedência média
     def _parse_term(self):
         node = self._parse_factor()
 
@@ -136,27 +124,26 @@ class Parser:
             op = self._current()
             self._advance()
             right = self._parse_factor()
-            node = BinaryOp(node, op, right)
+            node = BinOpNode(node, op, right)
 
         return node
 
-    # maior precedência
     def _parse_factor(self):
         token = self._current()
 
         if token.tipo == TipoToken.NUMERO:
             self._advance()
-            return Number(token.valor)
+            return NumberNode(token.valor)
 
         elif token.tipo == TipoToken.IDENTIFICADOR:
             self._advance()
-            return Identifier(token.valor)
+            return VarNode(token.valor)
 
         elif token.tipo == TipoToken.LPAREN:
             self._advance()
-            node = self._parse_expression()
+            expr = self._parse_expression()
             self._expect(TipoToken.RPAREN)
-            return node
+            return expr
 
         else:
-            raise SyntaxError(f"Token inesperado em fator: {token}")
+            raise Exception(f"Erro inesperado: {token}")
