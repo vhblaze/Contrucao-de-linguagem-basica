@@ -57,9 +57,10 @@ if (x > 5) {
 
 ## 👥 Equipe
 
-* Integrante 1
-* Integrante 2
+* Vitor Hugo Neves Do Vale Camargos
+* Pedro Ubirajara Santos de Faria
 
 ## 📎 Observações
 
-Projeto desenvolvido para a disciplina de Construção de Linguagem Básica.
+Projeto desenvolvido para a disciplina de CONSTRUÇÃO DE INTERPRETADORES E COMPILADORES.
+Professor: Jair Neto
