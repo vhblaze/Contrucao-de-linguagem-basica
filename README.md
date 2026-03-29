@@ -9,7 +9,7 @@ PythonMon é uma mini-linguagem de programação temática inspirada no universo
 ### Pré-requisitos
 
 * Python 3 instalado
-
+* git clone https://github.com/vhblaze/Contrucao-de-linguagem-basica.git
 ### Comando para rodar
 
 ```bash
@@ -27,7 +27,9 @@ python main.py (nomearquivo.blaze)
 ├── ast_nodes.py
 ├── interpreter.py
 ├── main.py
-└── exemplo.blaze
+├── teste_erro.blaze
+├── teste_if_else.blaze
+└── teste_logico.blaze
 ```
 
 ---
