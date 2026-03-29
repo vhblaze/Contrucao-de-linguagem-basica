@@ -137,7 +137,9 @@ Interpreter (execução)
 
 ## 👨‍💻 Autores
 
-Pedro Ubirajara Santos de Faria
-Vitor Hugo Neves Do Vale Camargos 
+#Pedro Ubirajara Santos de Faria
+
+
+#Vitor Hugo Neves Do Vale Camargos 
 
 Projeto acadêmico – Compiladores
