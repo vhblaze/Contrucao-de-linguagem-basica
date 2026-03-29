@@ -30,7 +30,11 @@ class AssignNode:
 class OutputNode:
     def __init__(self, expr):
         self.expr = expr
-
+        
+class UnaryOpNode:
+    def __init__(self, op, expr):
+        self.op = op
+        self.expr = expr
 
 class IfNode:
     def __init__(self, condition, then_block, else_block):
