@@ -1,0 +1,10 @@
+catchmon saldo = 1000;
+catchmon saque = 300;
+
+saldo = saldo - saque;
+
+ifmon (saldo >= 0) {
+    dexout saldo;
+} elsemon {
+    dexout 0;
+}
