@@ -20,6 +20,9 @@ python main.py (nomearquivo.blaze)
 
 ## 📁 Estrutura do projeto
 
+```bash
+git clone https://github.com/vhblaze/Contrucao-de-linguagem-basica.git
+cd Contrucao-de-linguagem-basica
 ```
 .
 ├── lexico.py
