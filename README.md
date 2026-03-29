@@ -1,4 +1,4 @@
-# 🔥 PythonMon
+# 🔥 PythonMon Language
 
 PythonMon é uma mini-linguagem de programação temática inspirada no universo Pokémon, desenvolvida como projeto acadêmico para a disciplina de Compiladores.
 
@@ -9,11 +9,17 @@ PythonMon é uma mini-linguagem de programação temática inspirada no universo
 ### Pré-requisitos
 
 * Python 3 instalado
-* git clone https://github.com/vhblaze/Contrucao-de-linguagem-basica.git
-### Comando para rodar
+* Clonar o repositório:
 
 ```bash
-python main.py (nomearquivo.blaze)
+git clone https://github.com/vhblaze/Contrucao-de-linguagem-basica.git
+cd Contrucao-de-linguagem-basica
+```
+
+### ▶️ Executar programa
+
+```bash
+python main.py exemplo.blaze
 ```
 
 ---
@@ -22,11 +28,11 @@ python main.py (nomearquivo.blaze)
 
 ```
 .
-├── lexico.py
-├── parser.py
-├── ast_nodes.py
-├── interpreter.py
-├── main.py
+├── lexico.py          # Analisador léxico
+├── parser.py          # Analisador sintático
+├── ast_nodes.py       # Estrutura da AST
+├── interpreter.py     # Execução da linguagem
+├── main.py            # Arquivo principal
 ├── teste_erro.blaze
 ├── teste_if_else.blaze
 └── teste_logico.blaze
@@ -36,7 +42,7 @@ python main.py (nomearquivo.blaze)
 
 ## 🧠 Sintaxe da linguagem
 
-### 🔹 Variáveis
+### 🔹 Declaração de variável
 
 ```
 catchmon x = 10;
@@ -48,7 +54,7 @@ catchmon x = 10;
 x = x + 5;
 ```
 
-### 🔹 Saída
+### 🔹 Saída de dados
 
 ```
 dexout x;
@@ -71,19 +77,13 @@ ifmon (x > 10) {
 ### Aritméticos
 
 ```
-+  -  *  /  %
++  -  *  /
 ```
 
 ### Relacionais
 
 ```
 ==  !=  >  <  >=  <=
-```
-
-### Lógicos
-
-```
-&&  ||  !
 ```
 
 ---
@@ -96,12 +96,59 @@ catchmon saque = 300;
 
 saldo = saldo - saque;
 
-ifmon (saldo >= 0 && !(saldo == 0)) {
+ifmon (saldo >= 0) {
     dexout saldo;
 } elsemon {
     dexout 0;
 }
 ```
+
+---
+
+## 📜 Gramática (EBNF)
+
+```
+program       ::= statement*
+
+statement     ::= declaration
+                | assignment
+                | if_statement
+                | output
+
+declaration   ::= "catchmon" IDENT "=" expression ";"
+assignment    ::= IDENT "=" expression ";"
+
+if_statement  ::= "ifmon" "(" expression ")" block ("elsemon" block)?
+
+block         ::= "{" statement* "}"
+
+output        ::= "dexout" expression ";"
+
+expression    ::= comparison
+
+comparison    ::= arithmetic ((">" | "<" | ">=" | "<=" | "==" | "!=") arithmetic)*
+
+arithmetic    ::= term (("+" | "-") term)*
+
+term          ::= factor (("*" | "/") factor)*
+
+factor        ::= NUMBER
+                | IDENT
+                | "(" expression ")"
+```
+
+---
+
+## ⚖️ Precedência e associatividade
+
+Da maior para a menor:
+
+1. Parênteses `()`
+2. Multiplicação e divisão `* /`
+3. Soma e subtração `+ -`
+4. Operadores relacionais `> < >= <= == !=`
+
+**Associatividade:** esquerda para direita
 
 ---
 
@@ -123,25 +170,35 @@ Interpreter (execução)
 
 * Tokens inválidos geram erro
 * Variáveis não definidas geram exceção
-* Erros de sintaxe interrompem execução
+* Erros de sintaxe interrompem a execução
+
+### ❌ Exemplo de erro
+
+```
+catchmon x = ;
+```
+
+Saída esperada:
+
+```
+Erro: esperado expressão após '='
+```
 
 ---
 
 ## 🎯 Objetivo acadêmico
 
-* Construção de linguagem
+* Construção de linguagem de programação
 * Análise léxica
-* Parsing
-* AST
-* Interpretação
+* Parsing (análise sintática)
+* Construção de AST
+* Interpretação de código
 
 ---
 
 ## 👨‍💻 Autores
 
 Pedro Ubirajara Santos de Faria
-
-
-Vitor Hugo Neves Do Vale Camargos 
+Vitor Hugo Neves do Vale Camargos
 
 Projeto acadêmico – Compiladores
