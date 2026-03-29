@@ -82,6 +82,10 @@ class Interpreter:
                 self.visit(node.then_block)
             elif node.else_block:
                 self.visit(node.else_block)
+        elif isinstance(node, UnaryOpNode):
+            value = self.visit(node.expr)
 
+            if node.op.tipo == TipoToken.NOT:
+                return not value
         else:
             raise Exception(f"Nó desconhecido: {node}")

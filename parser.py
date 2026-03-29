@@ -21,9 +21,6 @@ class Parser:
             return token
         raise SyntaxError(f"Esperado {tipo}, encontrado {token}")
 
-    # =========================
-    # ENTRY POINT
-    # =========================
     def parse(self):
         statements = []
 
@@ -32,9 +29,6 @@ class Parser:
 
         return BlockNode(statements)
 
-    # =========================
-    # STATEMENTS
-    # =========================
     def _parse_statement(self):
         token = self._current().tipo
 
@@ -108,10 +102,6 @@ class Parser:
         self._expect(TipoToken.RBRACE)
 
         return BlockNode(statements)
-
-    # =========================
-    # EXPRESSÕES COMPLETAS
-    # =========================
 
     def _parse_expression(self):
         node = self._parse_and()
