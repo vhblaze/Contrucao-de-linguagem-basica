@@ -13,7 +13,7 @@ PythonMon é uma mini-linguagem de programação temática inspirada no universo
 ### Comando para rodar
 
 ```bash
-python main.py exemplo.blaze
+python main.py (nomearquivo.blaze)
 ```
 
 ---
@@ -137,7 +137,7 @@ Interpreter (execução)
 
 ## 👨‍💻 Autores
 
--Pedro Ubirajara Santos de Faria
--Vitor Hugo Neves Do Vale Camargos 
+Pedro Ubirajara Santos de Faria
+Vitor Hugo Neves Do Vale Camargos 
 
 Projeto acadêmico – Compiladores
