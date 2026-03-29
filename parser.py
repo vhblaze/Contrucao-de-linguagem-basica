@@ -5,7 +5,7 @@ class Parser:
     def __init__(self, tokens):
         self.tokens = tokens
         self.pos = 0
-
+        
     def _current(self):
         return self.tokens[self.pos]
 
@@ -19,18 +19,12 @@ class Parser:
         self._advance()
         return token
 
-    # =====================
-    # ENTRY POINT
-    # =====================
     def parse(self):
         statements = []
         while self._current().tipo != TipoToken.EOF:
             statements.append(self._parse_statement())
         return BlockNode(statements)
 
-    # =====================
-    # STATEMENTS
-    # =====================
     def _parse_statement(self):
         token = self._current()
 
@@ -102,11 +96,29 @@ class Parser:
 
         self._expect(TipoToken.RBRACE)
         return BlockNode(statements)
-
-    # =====================
-    # EXPRESSIONS
-    # =====================
+    
     def _parse_expression(self):
+        return self._parse_comparison()
+
+    def _parse_comparison(self):
+        node = self._parse_arith()
+
+        while self._current().tipo in (
+            TipoToken.MAIOR,
+            TipoToken.MENOR,
+            TipoToken.MAIOR_IGUAL,
+            TipoToken.MENOR_IGUAL,
+            TipoToken.IGUALDADE,
+            TipoToken.DIFERENTE,
+        ):
+            op = self._current()
+            self._advance()
+            right = self._parse_arith()
+            node = BinOpNode(node, op, right)
+
+        return node
+
+    def _parse_arith(self):
         node = self._parse_term()
 
         while self._current().tipo in (TipoToken.SOMA, TipoToken.SUB):
