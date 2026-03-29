@@ -1,66 +1,143 @@
-# Mini Linguagem de Programação
+# 🔥 PythonMon
 
-## 📌 Sobre o Projeto
+PythonMon é uma mini-linguagem de programação temática inspirada no universo Pokémon, desenvolvida como projeto acadêmico para a disciplina de Compiladores.
 
-Este projeto consiste no desenvolvimento de uma mini-linguagem original, incluindo analisador léxico, parser, AST e execução. A linguagem possui sintaxe própria e foi criada com foco em aprendizado de compiladores.
+---
 
-## ⚙️ Funcionalidades
+## 🚀 Como executar
 
-* Declaração e atribuição de variáveis
-* Expressões aritméticas (+, -, *, /, %)
-* Operadores relacionais (==, !=, <, <=, >, >=)
-* Operadores lógicos
-* Estrutura condicional (if/else personalizada)
-* Saída de dados
-* Tratamento de erros com posição
+### Pré-requisitos
 
-## 🧱 Estrutura do Projeto
+* Python 3 instalado
 
-```
-/VT-Compiladores
-  ├── lexer
-  ├── parser
-  ├── ast
-  └── runtime
-```
-
-## ▶️ Como Executar
-
-1. Clone o repositório:
+### Comando para rodar
 
 ```bash
-git clone <seu-repo>
+python main.py exemplo.blaze
 ```
 
-2. Acesse a pasta:
+---
 
-```bash
-cd <seu-repo>
-```
-
-3. Execute o programa:
-
-```bash
-python main.py exemplo.nl
-```
-
-## 📄 Exemplo de Código
+## 📁 Estrutura do projeto
 
 ```
-var x = 10;
-if (x > 5) {
-  output x;
-} else {
-  output 0;
+.
+├── lexico.py
+├── parser.py
+├── ast_nodes.py
+├── interpreter.py
+├── main.py
+└── exemplo.blaze
+```
+
+---
+
+## 🧠 Sintaxe da linguagem
+
+### 🔹 Variáveis
+
+```
+catchmon x = 10;
+```
+
+### 🔹 Atribuição
+
+```
+x = x + 5;
+```
+
+### 🔹 Saída
+
+```
+dexout x;
+```
+
+### 🔹 Condicional
+
+```
+ifmon (x > 10) {
+    dexout x;
+} elsemon {
+    dexout 0;
 }
 ```
 
-## 👥 Equipe
+---
 
-* Vitor Hugo Neves Do Vale Camargos
-* Pedro Ubirajara Santos de Faria
+## ⚙️ Operadores suportados
 
-## 📎 Observações
+### Aritméticos
 
-Projeto desenvolvido para a disciplina de CONSTRUÇÃO DE INTERPRETADORES E COMPILADORES.
-Professor: Jair Neto
+```
++  -  *  /  %
+```
+
+### Relacionais
+
+```
+==  !=  >  <  >=  <=
+```
+
+### Lógicos
+
+```
+&&  ||  !
+```
+
+---
+
+## 🧪 Exemplo completo
+
+```
+catchmon saldo = 1000;
+catchmon saque = 300;
+
+saldo = saldo - saque;
+
+ifmon (saldo >= 0 && !(saldo == 0)) {
+    dexout saldo;
+} elsemon {
+    dexout 0;
+}
+```
+
+---
+
+## 🧱 Arquitetura
+
+```
+Código (.blaze)
+   ↓
+Lexer (tokens)
+   ↓
+Parser (AST)
+   ↓
+Interpreter (execução)
+```
+
+---
+
+## ⚠️ Tratamento de erros
+
+* Tokens inválidos geram erro
+* Variáveis não definidas geram exceção
+* Erros de sintaxe interrompem execução
+
+---
+
+## 🎯 Objetivo acadêmico
+
+* Construção de linguagem
+* Análise léxica
+* Parsing
+* AST
+* Interpretação
+
+---
+
+## 👨‍💻 Autores
+
+-Pedro Ubirajara Santos de Faria
+-Vitor Hugo Neves Do Vale Camargos 
+
+Projeto acadêmico – Compiladores
