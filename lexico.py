@@ -27,6 +27,10 @@ class TipoToken(Enum):
     SUB = "-"
     MULT = "*"
     DIV = "/"
+    MOD = "%"     
+    AND = "&&"      
+    OR = "||"      
+    NOT = "!"          
 
     # Delimitadores
     LPAREN = "("
@@ -38,9 +42,6 @@ class TipoToken(Enum):
     # Fim do arquivo
     EOF = "EOF"
 
-# =========================
-# CLASSE TOKEN
-# =========================
 class Token:
     def __init__(self, tipo, valor=None):
         self.tipo = tipo
@@ -49,9 +50,6 @@ class Token:
     def __repr__(self):
         return f"Token({self.tipo.name}, {repr(self.valor)})"
 
-# =========================
-# ANALISADOR LÉXICO
-# =========================
 class AnalisadorLexico:
     def __init__(self, codigo_fonte):
         self.codigo = codigo_fonte
@@ -66,9 +64,6 @@ class AnalisadorLexico:
             "dexout": TipoToken.DEXOUT,
         }
 
-    # =========================
-    # AUXILIARES
-    # =========================
     def _caractere_atual(self):
         if self.posicao >= len(self.codigo):
             return None
@@ -82,19 +77,14 @@ class AnalisadorLexico:
             return None
         return self.codigo[self.posicao + 1]
 
-    # =========================
-    # ANALISAR (CORE)
-    # =========================
     def analisar(self):
         while self._caractere_atual() is not None:
             char = self._caractere_atual()
 
-            # 1. Ignorar espaços
             if char.isspace():
                 self._avancar()
                 continue
 
-            # 2. Comentário (~~)
             if char == "~" and self._proximo() == "~":
                 self._avancar()
                 self._avancar()
@@ -102,7 +92,6 @@ class AnalisadorLexico:
                     self._avancar()
                 continue
 
-            # 3. Número
             if char.isdigit():
                 numero = ""
                 while self._caractere_atual() and self._caractere_atual().isdigit():
@@ -112,7 +101,6 @@ class AnalisadorLexico:
                 self.tokens.append(Token(TipoToken.NUMERO, int(numero)))
                 continue
 
-            # 4. Identificador / palavra-chave
             if char.isalpha() or char == "_":
                 ident = ""
                 while self._caractere_atual() and (
@@ -125,32 +113,36 @@ class AnalisadorLexico:
                 self.tokens.append(Token(tipo, ident))
                 continue
 
-            # 5. Operadores compostos
             if char == "=" and self._proximo() == "=":
                 self.tokens.append(Token(TipoToken.IGUALDADE, "=="))
-                self._avancar()
-                self._avancar()
+                self._avancar(); self._avancar()
                 continue
 
             if char == "!" and self._proximo() == "=":
                 self.tokens.append(Token(TipoToken.DIFERENTE, "!="))
-                self._avancar()
-                self._avancar()
+                self._avancar(); self._avancar()
                 continue
 
             if char == ">" and self._proximo() == "=":
                 self.tokens.append(Token(TipoToken.MAIOR_IGUAL, ">="))
-                self._avancar()
-                self._avancar()
+                self._avancar(); self._avancar()
                 continue
 
             if char == "<" and self._proximo() == "=":
                 self.tokens.append(Token(TipoToken.MENOR_IGUAL, "<="))
-                self._avancar()
-                self._avancar()
+                self._avancar(); self._avancar()
                 continue
 
-            # 6. Operadores simples
+            if char == "&" and self._proximo() == "&":
+                self.tokens.append(Token(TipoToken.AND, "&&"))
+                self._avancar(); self._avancar()
+                continue
+
+            if char == "|" and self._proximo() == "|":
+                self.tokens.append(Token(TipoToken.OR, "||"))
+                self._avancar(); self._avancar()
+                continue
+
             if char == "=":
                 self.tokens.append(Token(TipoToken.ATRIBUICAO, "="))
             elif char == ">":
@@ -165,6 +157,10 @@ class AnalisadorLexico:
                 self.tokens.append(Token(TipoToken.MULT, "*"))
             elif char == "/":
                 self.tokens.append(Token(TipoToken.DIV, "/"))
+            elif char == "%":
+                self.tokens.append(Token(TipoToken.MOD, "%"))  # ✅ novo
+            elif char == "!":
+                self.tokens.append(Token(TipoToken.NOT, "!"))  # ✅ novo
             elif char == "(":
                 self.tokens.append(Token(TipoToken.LPAREN, "("))
             elif char == ")":

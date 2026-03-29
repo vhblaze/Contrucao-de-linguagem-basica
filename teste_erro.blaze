@@ -1,0 +1,3 @@
+catchmon x = ;
+dexout x;
+catchmon x = x;

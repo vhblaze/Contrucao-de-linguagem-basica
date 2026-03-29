@@ -3,7 +3,7 @@ catchmon saque = 300;
 
 saldo = saldo - saque;
 
-ifmon (saldo >= 0) {
+ifmon (saldo >= 0 && !(saldo == 0)) {
     dexout saldo;
 } elsemon {
     dexout 0;

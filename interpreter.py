@@ -1,3 +1,6 @@
+from platform import node
+from turtle import left, right
+
 from lexico import TipoToken
 from ast_nodes import *
 
@@ -45,7 +48,16 @@ class Interpreter:
                 return left == right
             elif op == TipoToken.DIFERENTE:
                 return left != right
-
+            elif op == TipoToken.MOD:
+                return left % right
+            elif op == TipoToken.AND:
+                return left and right
+            elif op == TipoToken.OR:
+                return left or right
+            elif isinstance(node, UnaryOpNode):
+                value = self.visit(node.expr)
+            elif node.op.tipo == TipoToken.NOT:
+                return not value
             else:
                 raise Exception(f"Operador não suportado: {op}")
             
@@ -70,6 +82,10 @@ class Interpreter:
                 self.visit(node.then_block)
             elif node.else_block:
                 self.visit(node.else_block)
+        elif isinstance(node, UnaryOpNode):
+            value = self.visit(node.expr)
 
+            if node.op.tipo == TipoToken.NOT:
+                return not value
         else:
             raise Exception(f"Nó desconhecido: {node}")

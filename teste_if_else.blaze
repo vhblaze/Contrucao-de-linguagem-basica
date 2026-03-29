@@ -1,0 +1,8 @@
+catchmon x = 10;
+catchmon y = 5;
+
+ifmon (x > y) {
+    dexout x;
+} elsemon {
+    dexout y;
+}

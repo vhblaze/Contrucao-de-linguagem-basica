@@ -1,12 +1,14 @@
-from lexico import TipoToken
 from ast_nodes import *
+from lexico import TipoToken
 
 class Parser:
     def __init__(self, tokens):
         self.tokens = tokens
         self.pos = 0
-        
+
     def _current(self):
+        if self.pos >= len(self.tokens):
+            return self.tokens[-1]
         return self.tokens[self.pos]
 
     def _advance(self):
@@ -14,68 +16,64 @@ class Parser:
 
     def _expect(self, tipo):
         token = self._current()
-        if token.tipo != tipo:
-            raise Exception(f"Erro: esperado {tipo}, encontrado {token.tipo}")
-        self._advance()
-        return token
+        if token.tipo == tipo:
+            self._advance()
+            return token
+        raise SyntaxError(f"Esperado {tipo}, encontrado {token}")
 
     def parse(self):
         statements = []
+
         while self._current().tipo != TipoToken.EOF:
             statements.append(self._parse_statement())
+
         return BlockNode(statements)
 
     def _parse_statement(self):
-        token = self._current()
+        token = self._current().tipo
 
-        if token.tipo == TipoToken.CATCHMON:
-            return self._parse_declaration()
+        if token == TipoToken.CATCHMON:
+            return self._parse_var_decl()
 
-        elif token.tipo == TipoToken.IDENTIFICADOR:
+        elif token == TipoToken.IDENTIFICADOR:
             return self._parse_assignment()
 
-        elif token.tipo == TipoToken.IFMON:
+        elif token == TipoToken.IFMON:
             return self._parse_if()
 
-        elif token.tipo == TipoToken.DEXOUT:
+        elif token == TipoToken.DEXOUT:
             return self._parse_output()
 
         else:
-            raise Exception(f"Comando inválido: {token}")
+            raise SyntaxError(f"Comando inesperado: {self._current()}")
 
-    def _parse_declaration(self):
+    def _parse_var_decl(self):
         self._expect(TipoToken.CATCHMON)
-
         name = self._expect(TipoToken.IDENTIFICADOR).valor
-        self._expect(TipoToken.ATRIBUICAO)
 
+        self._expect(TipoToken.ATRIBUICAO)
         value = self._parse_expression()
+
         self._expect(TipoToken.PONTO_VIRGULA)
 
         return VarDeclNode(name, value)
 
     def _parse_assignment(self):
         name = self._expect(TipoToken.IDENTIFICADOR).valor
-        self._expect(TipoToken.ATRIBUICAO)
 
+        self._expect(TipoToken.ATRIBUICAO)
         value = self._parse_expression()
+
         self._expect(TipoToken.PONTO_VIRGULA)
 
         return AssignNode(name, value)
 
-    def _parse_output(self):
-        self._expect(TipoToken.DEXOUT)
-
-        expr = self._parse_expression()
-        self._expect(TipoToken.PONTO_VIRGULA)
-
-        return OutputNode(expr)
-
     def _parse_if(self):
         self._expect(TipoToken.IFMON)
-
         self._expect(TipoToken.LPAREN)
+
         condition = self._parse_expression()
+
         self._expect(TipoToken.RPAREN)
 
         then_block = self._parse_block()
@@ -87,6 +85,13 @@ class Parser:
 
         return IfNode(condition, then_block, else_block)
 
+    def _parse_output(self):
+        self._expect(TipoToken.DEXOUT)
+        value = self._parse_expression()
+        self._expect(TipoToken.PONTO_VIRGULA)
+
+        return OutputNode(value)
+
     def _parse_block(self):
         self._expect(TipoToken.LBRACE)
 
@@ -95,10 +100,30 @@ class Parser:
             statements.append(self._parse_statement())
 
         self._expect(TipoToken.RBRACE)
+
         return BlockNode(statements)
-    
+
     def _parse_expression(self):
-        return self._parse_comparison()
+        node = self._parse_and()
+
+        while self._current().tipo == TipoToken.OR:
+            op = self._current()
+            self._advance()
+            right = self._parse_and()
+            node = BinOpNode(node, op, right)
+
+        return node
+
+    def _parse_and(self):
+        node = self._parse_comparison()
+
+        while self._current().tipo == TipoToken.AND:
+            op = self._current()
+            self._advance()
+            right = self._parse_comparison()
+            node = BinOpNode(node, op, right)
+
+        return node
 
     def _parse_comparison(self):
         node = self._parse_arith()
@@ -132,7 +157,11 @@ class Parser:
     def _parse_term(self):
         node = self._parse_factor()
 
-        while self._current().tipo in (TipoToken.MULT, TipoToken.DIV):
+        while self._current().tipo in (
+            TipoToken.MULT,
+            TipoToken.DIV,
+            TipoToken.MOD,
+        ):
             op = self._current()
             self._advance()
             right = self._parse_factor()
@@ -143,7 +172,11 @@ class Parser:
     def _parse_factor(self):
         token = self._current()
 
-        if token.tipo == TipoToken.NUMERO:
+        if token.tipo == TipoToken.NOT:
+            self._advance()
+            return UnaryOpNode(token, self._parse_factor())
+
+        elif token.tipo == TipoToken.NUMERO:
             self._advance()
             return NumberNode(token.valor)
 
@@ -153,9 +186,9 @@ class Parser:
 
         elif token.tipo == TipoToken.LPAREN:
             self._advance()
-            expr = self._parse_expression()
+            node = self._parse_expression()
             self._expect(TipoToken.RPAREN)
-            return expr
+            return node
 
         else:
-            raise Exception(f"Erro inesperado: {token}")
+            raise SyntaxError(f"Token inesperado: {token}")
