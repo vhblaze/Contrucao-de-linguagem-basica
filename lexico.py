@@ -1,21 +1,21 @@
 from enum import Enum
+from errors import LexicalError
+
 
 # =========================
 # TIPOS DE TOKEN (ENUM)
 # =========================
 class TipoToken(Enum):
-    # Palavras-chave
     CATCHMON = "CATCHMON"
     GIVEMON = "GIVEMON"
     IFMON = "IFMON"
     ELSEMON = "ELSEMON"
+    ENTAOMON = "ENTAOMON"
     DEXOUT = "DEXOUT"
 
-    # Identificadores e literais
     IDENTIFICADOR = "IDENTIFICADOR"
     NUMERO = "NUMERO"
-
-    # Operadores
+    WHILEMON = "WHILEMON"
     ATRIBUICAO = "="
     IGUALDADE = "=="
     DIFERENTE = "!="
@@ -32,15 +32,15 @@ class TipoToken(Enum):
     OR = "||"      
     NOT = "!"          
 
-    # Delimitadores
     LPAREN = "("
     RPAREN = ")"
     LBRACE = "{"
     RBRACE = "}"
     PONTO_VIRGULA = ";"
-
-    # Fim do arquivo
+    LBARRA = "["
+    RBARRA = "]"
     EOF = "EOF"
+    VIRGULA = ","
 
 class Token:
     def __init__(self, tipo, valor=None):
@@ -61,7 +61,20 @@ class AnalisadorLexico:
             "givemon": TipoToken.GIVEMON,
             "ifmon": TipoToken.IFMON,
             "elsemon": TipoToken.ELSEMON,
+            "entaomon": TipoToken.ENTAOMON,
+            "whilemon": TipoToken.WHILEMON,
             "dexout": TipoToken.DEXOUT,
+            "&&": TipoToken.AND,
+            "||": TipoToken.OR,
+            "!": TipoToken.NOT,
+            "(": TipoToken.LPAREN,
+            ")": TipoToken.RPAREN,
+            "{": TipoToken.LBRACE,
+            "}": TipoToken.RBRACE,
+            ";": TipoToken.PONTO_VIRGULA,
+            "[": TipoToken.LBARRA,
+            "]": TipoToken.RBARRA
+            
         }
 
     def _caractere_atual(self):
@@ -158,9 +171,9 @@ class AnalisadorLexico:
             elif char == "/":
                 self.tokens.append(Token(TipoToken.DIV, "/"))
             elif char == "%":
-                self.tokens.append(Token(TipoToken.MOD, "%"))  # ✅ novo
+                self.tokens.append(Token(TipoToken.MOD, "%"))
             elif char == "!":
-                self.tokens.append(Token(TipoToken.NOT, "!"))  # ✅ novo
+                self.tokens.append(Token(TipoToken.NOT, "!")) 
             elif char == "(":
                 self.tokens.append(Token(TipoToken.LPAREN, "("))
             elif char == ")":
@@ -171,8 +184,14 @@ class AnalisadorLexico:
                 self.tokens.append(Token(TipoToken.RBRACE, "}"))
             elif char == ";":
                 self.tokens.append(Token(TipoToken.PONTO_VIRGULA, ";"))
+            elif char == ",":
+                self.tokens.append(Token(TipoToken.VIRGULA, ","))
+            elif char == "[":
+                self.tokens.append(Token(TipoToken.LBARRA, "["))
+            elif char == "]":
+                self.tokens.append(Token(TipoToken.RBARRA, "]"))
             else:
-                raise ValueError(f"Caractere inválido: '{char}'")
+                raise LexicalError(f"Caractere inválido: '{char}'")
 
             self._avancar()
 

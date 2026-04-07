@@ -1,13 +1,15 @@
+from operator import index
 from platform import node
 from turtle import left, right
-
+from errors import RuntimeErrorCustom
 from lexico import TipoToken
 from ast_nodes import *
 
 class Interpreter:
     def __init__(self):
         self.env = {}
-
+        self.contador = 0
+    
     def visit(self, node):
 
         if isinstance(node, BlockNode):
@@ -19,9 +21,18 @@ class Interpreter:
 
         elif isinstance(node, VarNode):
             if node.name not in self.env:
-                raise Exception(f"Variável '{node.name}' não definida")
+                raise RuntimeErrorCustom(f"Variável '{node.name}' não definida")
             return self.env[node.name]
+        
+        elif isinstance(node, CallNode):
 
+            if node.name == "contador":
+                self.contador += 1
+                return self.contador
+
+            else:
+                raise RuntimeErrorCustom(f"Função '{node.name}' não definida")
+        
         elif isinstance(node, BinOpNode):
             left = self.visit(node.left)
             right = self.visit(node.right)
@@ -59,22 +70,36 @@ class Interpreter:
             elif node.op.tipo == TipoToken.NOT:
                 return not value
             else:
-                raise Exception(f"Operador não suportado: {op}")
+                raise RuntimeErrorCustom(f"Operador não suportado: {op}")
             
         elif isinstance(node, VarDeclNode):
             value = self.visit(node.value)
             self.env[node.name] = value
+        elif isinstance(node, WhileNode):
+            while self.visit(node.condition):
+                self.visit(node.block)
+        
+        elif isinstance(node, IndexNode):
+            lista = self.visit(node.list_node)
+            index = self.visit(node.index)
 
+            try:
+                return lista[index]
+            except Exception:
+                raise RuntimeErrorCustom("Erro ao acessar índice da lista")   
+    
         elif isinstance(node, AssignNode):
             if node.name not in self.env:
-                raise Exception(f"Variável '{node.name}' não definida")
+                raise RuntimeErrorCustom(f"Variável '{node.name}' não definida")
             value = self.visit(node.value)
             self.env[node.name] = value
 
         elif isinstance(node, OutputNode):
             value = self.visit(node.expr)
             print(value)
-
+        elif isinstance(node, ListNode):
+            return [self.visit(element) for element in node.elements]
+         
         elif isinstance(node, IfNode):
             condition = self.visit(node.condition)
 
@@ -88,4 +113,4 @@ class Interpreter:
             if node.op.tipo == TipoToken.NOT:
                 return not value
         else:
-            raise Exception(f"Nó desconhecido: {node}")
+            raise RuntimeErrorCustom(f"Nó desconhecido: {node}")

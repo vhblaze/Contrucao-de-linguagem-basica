@@ -1,3 +1,9 @@
+from platform import node
+import token
+
+from matplotlib.pylab import block
+from errors import SyntaxErrorCustom
+
 from ast_nodes import *
 from lexico import TipoToken
 
@@ -19,7 +25,7 @@ class Parser:
         if token.tipo == tipo:
             self._advance()
             return token
-        raise SyntaxError(f"Esperado {tipo}, encontrado {token}")
+        raise SyntaxErrorCustom(f"Esperado {tipo}, encontrado {token}")
 
     def parse(self):
         statements = []
@@ -28,7 +34,18 @@ class Parser:
             statements.append(self._parse_statement())
 
         return BlockNode(statements)
+    
+    def _parse_while(self):
+        self._expect(TipoToken.WHILEMON)
+        self._expect(TipoToken.LPAREN)
 
+        condition = self._parse_expression()
+
+        self._expect(TipoToken.RPAREN)
+
+        block = self._parse_block()
+
+        return WhileNode(condition, block)
     def _parse_statement(self):
         token = self._current().tipo
 
@@ -37,15 +54,22 @@ class Parser:
 
         elif token == TipoToken.IDENTIFICADOR:
             return self._parse_assignment()
-
+        elif token == TipoToken.WHILEMON:
+            return self._parse_while()
         elif token == TipoToken.IFMON:
             return self._parse_if()
-
+        elif token == TipoToken.ELSEMON:
+            raise SyntaxErrorCustom("Else inesperado sem if correspondente")
         elif token == TipoToken.DEXOUT:
             return self._parse_output()
-
+        elif token == TipoToken.LBARRA:
+            node = self._parse_list()
+            self._expect(TipoToken.PONTO_VIRGULA)
+            return node
+        elif token == TipoToken.RBARRA:
+            raise SyntaxErrorCustom("']' sem '[' correspondente")
         else:
-            raise SyntaxError(f"Comando inesperado: {self._current()}")
+            raise SyntaxErrorCustom(f"Comando inesperado: {self._current()}")
 
     def _parse_var_decl(self):
         self._expect(TipoToken.CATCHMON)
@@ -75,7 +99,7 @@ class Parser:
         condition = self._parse_expression()
 
         self._expect(TipoToken.RPAREN)
-
+        self._expect(TipoToken.ENTAOMON)
         then_block = self._parse_block()
 
         else_block = None
@@ -91,7 +115,26 @@ class Parser:
         self._expect(TipoToken.PONTO_VIRGULA)
 
         return OutputNode(value)
+    
+    #============================
+    # AQUI COMEÇA O COMANDO DE LISTA. Questão 1
+    #============================
+    
+    def _parse_list(self):                         #Comando para criar lista no parser ESTA AQUI JAIR NÃO DE ZERO!
+        self._expect(TipoToken.LBARRA)
 
+        elements = []
+        if self._current().tipo != TipoToken.RBARRA:
+            elements.append(self._parse_expression())
+
+            while self._current().tipo == TipoToken.VIRGULA:
+                self._advance()
+                elements.append(self._parse_expression())
+
+        self._expect(TipoToken.RBARRA)
+        return ListNode(elements)
+    
+        
     def _parse_block(self):
         self._expect(TipoToken.LBRACE)
 
@@ -179,16 +222,46 @@ class Parser:
         elif token.tipo == TipoToken.NUMERO:
             self._advance()
             return NumberNode(token.valor)
-
+    #======================
+    #Aqui fizemos a modificação para o comando de lista, para questão 3 para ele fazer o contador de elementos da lista, ou seja, o comando #lista e, tambem a expressão ifmon, elsemon, para mudar a forma de escrever o if e else, para questão 2.
+    #=======================
         elif token.tipo == TipoToken.IDENTIFICADOR:
             self._advance()
-            return VarNode(token.valor)
 
+            if self._current().tipo == TipoToken.LPAREN:
+                self._advance()  # (
+
+                args = []
+                if self._current().tipo != TipoToken.RPAREN:
+                    args.append(self._parse_expression())
+
+                    while self._current().tipo == TipoToken.VIRGULA:
+                       self._advance()
+                       args.append(self._parse_expression())
+
+                self._expect(TipoToken.RPAREN)
+
+                return CallNode(token.valor, args)
+            node = VarNode(token.valor)
+
+            while self._current().tipo == TipoToken.LBARRA:
+                self._advance()
+                index = self._parse_expression()
+                self._expect(TipoToken.RBARRA)
+                node = IndexNode(node, index)
+            return node
+        
         elif token.tipo == TipoToken.LPAREN:
             self._advance()
             node = self._parse_expression()
             self._expect(TipoToken.RPAREN)
             return node
 
+        elif token.tipo == TipoToken.LBARRA:
+            return self._parse_list()
+
+        elif token.tipo == TipoToken.RBARRA:
+            raise SyntaxErrorCustom("']' sem '[' correspondente")
+
         else:
-            raise SyntaxError(f"Token inesperado: {token}")
+            raise SyntaxErrorCustom(f"Token inesperado: {token}")

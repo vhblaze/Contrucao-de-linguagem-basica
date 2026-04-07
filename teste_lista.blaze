@@ -1,0 +1,2 @@
+catchmon x = [10, 20, 30];
+dexout x[2];

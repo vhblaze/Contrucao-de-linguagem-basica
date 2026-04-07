@@ -1,13 +1,14 @@
 from lexico import AnalisadorLexico
-from parser import Parser
+from parser_1 import Parser
 from interpreter import Interpreter
+from errors import LexicalError, SyntaxErrorCustom, RuntimeErrorCustom
 import sys
 
 def executar_codigo(codigo):
     try:
-
-        lexer = AnalisadorLexico(codigo)
+        lexer = AnalisadorLexico(codigo)      
         tokens = lexer.analisar()
+        tokens = lexer.tokens
 
         parser = Parser(tokens)
         ast = parser.parse()
@@ -15,8 +16,14 @@ def executar_codigo(codigo):
         interpreter = Interpreter()
         interpreter.visit(ast)
 
-    except Exception as e:
-        print(f"Erro: {e}")
+    
+    except LexicalError as e:
+        print(f"Erro Lexico: {e}")
+    except SyntaxErrorCustom as e:
+        print(f"Erro de Sintaxe: {e}")
+    except RuntimeErrorCustom as e:
+        print(f"Erro de Execução: {e}")
+
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:

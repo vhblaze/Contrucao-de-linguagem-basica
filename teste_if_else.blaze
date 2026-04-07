@@ -1,8 +1,10 @@
-catchmon x = 10;
-catchmon y = 5;
+catchmon saldo = 1000;
+catchmon saque = 300;
 
-ifmon (x > y) {
-    dexout x;
+saldo = saldo - saque;
+
+ifmon (saldo >= 0 && !(saldo == 0)) entaomon {
+    dexout saldo;
 } elsemon {
-    dexout y;
+    dexout 0;
 }
