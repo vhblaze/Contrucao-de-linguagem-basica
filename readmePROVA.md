@@ -2,6 +2,48 @@
 
 Este documento descreve todas as evoluções e implementações realizadas na linguagem ao longo do desenvolvimento.
 
+DISCENTE(s): Pedro Ubirajara Santos de Faria - 601015364
+Vitor Hugo Neves do Vale Camargos - 601016508
+
+
+Cada questão está demarcada com os comentários:
+
+
+#===========================
+#Aqui está a questão X, opção Y
+#==========================
+
+Na questão 1 escolhemos a opção B  (lista).
+O código pode ser conferido na íntegra no arquivo ast_nodes.py 
+Linha 33 até 35
+O código pode ser conferido na íntegra no arquivo parser_1.py 
+Linha 123 até 135
+O código pode ser conferido na íntegra no arquivo lexico.py 
+Linha 40, 75, 189 até 41, 76, 192
+O código pode ser conferido na íntegra no arquivo interpreter.py 
+Linha 82 até 89
+O arquivo de teste dessa função é teste_lista.blaze
+O teste é realizado através do comando no terminal python main.py teste_lista.blaze
+
+Na questão 2 escolhemos a opção A  (novo formato de condicional).
+O código pode ser conferido na íntegra no arquivo parser_1.py 
+Linha 95 até 110
+O código pode ser conferido na íntegra no arquivo interpreter.py 
+Linha 103 até 109
+O código pode ser conferido na íntegra no arquivo lexico_1.py 
+Linha 11, 62  até 13, 64
+O código pode ser conferido na íntegra no arquivo ast_nodes.py 
+Linha 57 até 61
+O arquivo de teste dessa função é teste_if_else.blaze.
+O teste é realizado através do comando no terminal python main.py teste_if_else.blaze
+
+Na questão 3 escolhemos a opção A  (função contador).
+O código pode ser conferido na íntegra no arquivo  interpreter.py
+Linha 11 até 31
+O arquivo de teste dessa função é teste_contador.blaze.
+O teste é realizado através do comando no terminal python main.py teste_contador.blaze
+
+
 ---
 
 # 📌 1. Estrutura Inicial
