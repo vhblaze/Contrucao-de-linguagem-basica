@@ -20,7 +20,7 @@ from ast_nodes import (
     VarAccessNode,
     VarAssignNode,
 )
-from errors import RuntimeErrorCustom
+from errors import LeadScriptError, RuntimeErrorCustom
 from lexico import TipoToken
 
 
@@ -107,7 +107,17 @@ class Interpreter:
                 getattr(node, "line", None),
                 getattr(node, "column", None),
             )
-        return await method(node)
+
+        try:
+            return await method(node)
+        except LeadScriptError:
+            raise
+        except Exception as exc:
+            raise RuntimeErrorCustom(
+                f"Falha em runtime ao executar {type(node).__name__}: {exc}.",
+                getattr(node, "line", None),
+                getattr(node, "column", None),
+            ) from exc
 
     async def visit_BlockNode(self, node: BlockNode):
         result = None

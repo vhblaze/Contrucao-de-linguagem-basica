@@ -35,7 +35,7 @@ python -m pip install pytest pyinstaller
 Com o Python:
 
 ```bash
-python main.py caminho/para/campanha.las
+python main.py rodar caminho/para/campanha.las
 ```
 
 Com a CLI oficial:
@@ -52,14 +52,15 @@ caminho a partir do diretorio atual antes de ler o arquivo.
 Use o script de build:
 
 ```bash
-python build_runner.py
+python build.py
 ```
 
-Ele executa o PyInstaller com `--onefile`, nomeia o binario como `leadscript` e
-inclui explicitamente `asyncio` como import oculto:
+Ele importa `PyInstaller.__main__`, executa o build com `--onefile`, nomeia o
+binario como `leadscript`, adiciona a raiz do projeto em `--paths`, grava o
+executavel em `dist/` e inclui explicitamente `asyncio` como import oculto:
 
 ```bash
-python -m PyInstaller --onefile --name leadscript --clean --hidden-import asyncio cli.py
+PyInstaller cli.py --onefile --name leadscript --clean --noconfirm --distpath dist --workpath build --specpath build --paths . --hidden-import asyncio
 ```
 
 Saida esperada:
@@ -80,6 +81,11 @@ ou:
 ```bash
 ./dist/leadscript rodar campanha.las
 ```
+
+No Windows, tambem e possivel arrastar um arquivo `.las` diretamente sobre
+`dist\leadscript.exe`. Nesse modo o runner executa o script e mantem a janela
+aberta ao final com `Pressione Enter para sair...`, facilitando os testes fora
+do terminal.
 
 ## Sintaxe da Linguagem
 
@@ -260,7 +266,7 @@ dicionario com status da notificacao
 LeadScript exibe erros com arquivo, linha, coluna, trecho de codigo e ponteiro:
 
 ```text
-Erro de Sintaxe no arquivo 'campanha.las' na linha 4, coluna 14:
+[Erro de Sintaxe] no arquivo 'campanha.las' na linha 4, coluna 14:
     se score > 80
                  ^
     Esperado 'entao:' apos a condicao.
@@ -298,7 +304,8 @@ ast_nodes.py       Nos da AST com linha/coluna
 interpreter.py     Motor assincrono e funcoes nativas
 main.py            API de execucao do motor
 cli.py             Runner de linha de comando
-build_runner.py    Build onefile com PyInstaller
+build.py           Build onefile com PyInstaller
+build_runner.py    Alias legado para build.py
 errors.py          Erros customizados e formatacao amigavel
 tests/             Suite pytest e scripts .las
 ```

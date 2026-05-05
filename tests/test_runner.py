@@ -33,7 +33,7 @@ def test_erro_de_sintaxe_informa_linha_coluna_e_mensagem():
         executar("test_erro_sintaxe.las")
 
     mensagem = erro.value.format()
-    assert "Erro de Sintaxe" in mensagem
+    assert "[Erro de Sintaxe]" in mensagem
     assert "test_erro_sintaxe.las" in mensagem
     assert "linha 4" in mensagem
     assert "Esperado 'entao:' apos a condicao." in mensagem
@@ -45,7 +45,7 @@ def test_erro_de_variavel_inexistente_vira_runtime_error_amigavel():
         executar("test_erro_variavel.las")
 
     mensagem = erro.value.format()
-    assert "Erro de Execucao" in mensagem
+    assert "[Erro de Execucao]" in mensagem
     assert "test_erro_variavel.las" in mensagem
     assert "linha 2" in mensagem
     assert "variavel_inexistente" in mensagem

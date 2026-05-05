@@ -1,3 +1,4 @@
+import argparse
 import asyncio
 import sys
 from pathlib import Path
@@ -50,19 +51,45 @@ async def executar_arquivo(caminho):
     return await executar_codigo_async(codigo, filename=arquivo.name)
 
 
+def criar_parser():
+    parser = argparse.ArgumentParser(
+        prog="leadscript",
+        description="Runner oficial da linguagem LeadScript.",
+    )
+    subparsers = parser.add_subparsers(dest="comando", required=True)
+
+    rodar = subparsers.add_parser(
+        "rodar",
+        help="Executa um arquivo .las.",
+    )
+    rodar.add_argument(
+        "arquivo",
+        help="Caminho absoluto ou relativo para o script .las.",
+    )
+
+    return parser
+
+
 def main(argv=None):
-    argv = argv or sys.argv[1:]
+    argv = list(sys.argv[1:] if argv is None else argv)
 
-    if len(argv) != 1:
-        print("Uso: python main.py arquivo.las")
-        return 1
+    # Compatibilidade com a Fase 1: `python main.py script.las`.
+    if len(argv) == 1 and not argv[0].startswith("-"):
+        argv = ["rodar", argv[0]]
 
-    try:
-        asyncio.run(executar_arquivo(argv[0]))
-        return 0
-    except LeadScriptError as erro:
-        print(erro.format())
-        return 1
+    parser = criar_parser()
+    args = parser.parse_args(argv)
+
+    if args.comando == "rodar":
+        try:
+            asyncio.run(executar_arquivo(args.arquivo))
+            return 0
+        except LeadScriptError as erro:
+            print(erro.format(), file=sys.stderr)
+            return 1
+
+    parser.print_help()
+    return 1
 
 
 if __name__ == "__main__":

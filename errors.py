@@ -35,12 +35,12 @@ class LeadScriptError(Exception):
         filename = f" no arquivo '{self.filename}'" if self.filename else ""
         if self.line is not None and self.column is not None:
             return (
-                f"{self.error_name}{filename} na linha {self.line}, "
+                f"[{self.error_name}]{filename} na linha {self.line}, "
                 f"coluna {self.column}:"
             )
         if self.line is not None:
-            return f"{self.error_name}{filename} na linha {self.line}:"
-        return f"{self.error_name}{filename}:"
+            return f"[{self.error_name}]{filename} na linha {self.line}:"
+        return f"[{self.error_name}]{filename}:"
 
     def _format_source_excerpt(self):
         if not self.source or self.line is None:
